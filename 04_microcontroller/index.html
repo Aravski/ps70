@@ -25,16 +25,61 @@
 
 <h3>Week 4: Microcontroller Programming</h3>
 
-<h4>[Do Something with an arduino]</h4>
+<h4>[I DID Something with an arduino]</h4>
+
+<pre><code class="languge-arduino">
+----------------------------------------------------
 
 
+const int buttonPin = D0;
+const int ledPin = D1;
+const int motorAPin = D7;
+const int motorBPin = D8;
 
+void setup() {
+  pinMode(buttonPin, INPUT_PULLUP);
+  pinMode(ledPin, OUTPUT);
+  pinMode(motorAPin, OUTPUT);
+  pinMode(motorBPin, OUTPUT);
+  digitalWrite(ledPin, LOW);
+  digitalWrite(motorAPin, HIGH);
+  digitalWrite(motorBPin, LOW);
+
+}
+
+void loop() {
+  bool pressed = (digitalRead(buttonPin) == LOW);
+  if (pressed) {
+    digitalWrite(motorAPin, LOW);
+    digitalWrite(motorBPin, LOW);
+    digitalWrite(ledPin, HIGH);
+  } else {
+    digitalWrite(ledPin, LOW);
+    digitalWrite(motorAPin, HIGH);
+    digitalWrite(motorBPin, LOW);
+  }
+
+}
+
+
+----------------------------------------------------
+</code></pre>
+
+<h4>So this program is meant to power a motor constantly {if my Arduino decides to work :( } and once the button is pressed it is supposed to stop the motor and turn on a led to indiacte that the motor has stopped. I used the rotation mechanic lab combined with the led+button lab to make this. My Arduino board hates me from the start so making this work was impossibly hard. </h4>
 
 
 </div>
 </xmp>
 </body>
 
+<div class="center-row">
+  <img src="./unnamed3.png" alt="placeholder for you about me image" width = "640" height = "480">
+
+</div>
+<div class="center-row">
+  <img src="./unnamed4.png" alt="placeholder for you about me image" width = "640" height = "480">
+
+</div>
 <script src="../strapdown.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" ></script>
 
