@@ -26,21 +26,120 @@
 <h3>Week 9: Radio, WiFi, Bluetooth (IoT)</h3>
 
 
-<p class="margin">   </p>
-<div class="flexrow">
-  <a id="btn" href="wk9.zip" download>Download my files from this week!
-  </a>
-</div>
+
 <p class="margin">   </p>
 
-<h4>Assignment: [Program something with IOT]</h4>
+<h4>Assignment: [ I ProgramED something with IOT]</h4>
 
 
+<h4>I made a door-open detector. So when the door opens the first arduino board will detect this then send me a sms, after that it will wirelessly tell the second arduino board in the room to light up a led located at pin D3. The door opening detector is programed to detect an openening whenever the graph goes below 408000, meaning that the copper strips will not be touching. The copped strips go on the hinges of a door. An issue I had was for twilo to actually send me the notification which did not work for some reason until I switched the numbers from it initially sending a sms on my phone, to sending it on a digital phone. The entire program is really janky and works only when all the planets line up, part of the blame goes to my arduino usb cable since there are 2 tears which make the power going to the board disconnect randomly based on position, so keeping that wire still is key (also dont touch the tears they sting!). Most of the times the program wouldnt even read the signal between the copper wires, but when I change the pins and tweak around the code it works, but then stops working when I update the code. So again just hope its solar eclipse for this thing to work.  </h4>
 
 
 </div>
 </xmp>
 </body>
+
+<p class="margin">   </p>
+<pre><code class="languge-arduino">
+----------------------------------------------------
+
+#include <WiFi.h>
+#include <WiFiClientSecure.h>
+#include <HTTPClient.h>
+
+const char* ssid     = "MAKERSPACE";
+const char* password = "NOTLEAKINGWIFIPASSWORD";
+
+const char* twilioSID   = "AC2613a1eNOTGIVINGMYFULLKEYa86e";
+const char* twilioToken = "d1aff8d715NOTGIVINGMYFULLKEYb99ae2807bc11f";
+const char* twilioFrom  = "+18NOTGIVINGMYFULLNUMBER4236";
+const char* twilioTo    = "+1NOTGIVINGMYFULLNUMBER6";
+
+const long TOUCH_THRESHOLD = 408000;
+
+const int sensorPin1 = A0;  // GPIO0
+const int sensorPin2 = A1;  // GPIO1
+
+WiFiClientSecure client;
+HTTPClient https;
+
+bool doorWasClosed = true;
+
+void setup() {
+  Serial.begin(9600);
+
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to Wi-Fi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\n Wi-Fi connected");
+
+  client.setInsecure();
+}
+
+void loop() {
+  long couplingValue = tx_rx();
+
+  Serial.print("Coupling Value: ");
+  Serial.println(couplingValue);
+
+  if (couplingValue < TOUCH_THRESHOLD && doorWasClosed) {
+    sendTwilioSMS("hi");
+    doorWasClosed = false;
+  } else if (couplingValue >= TOUCH_THRESHOLD && !doorWasClosed) {
+    doorWasClosed = true;
+  }
+
+  delay(100);
+}
+
+long tx_rx() {
+  long val1 = analogRead(sensorPin1);
+  long val2 = analogRead(sensorPin2);
+  return (val1 + val2) / 2;
+}
+
+void sendTwilioSMS(const String &message) {
+  String url = String("https://api.twilio.com/2010-04-01/Accounts/") +
+               twilioSID + "/Messages.json";
+  https.begin(client, url);
+  https.setAuthorization(twilioSID, twilioToken);
+  https.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+  String postData = "To="   + String(twilioTo) +
+                    "&From=" + String(twilioFrom) +
+                    "&Body="  + message;
+
+  int httpCode = https.POST(postData);
+  Serial.printf("HTTP Status: %d\n", httpCode);
+  Serial.println("Response: " + https.getString());
+  https.end();
+}
+
+
+
+----------------------------------------------------
+<p class="margin">   </p>
+</code></pre>
+
+<div class="center-row">
+  <img src="./itsIMG1.png" alt="placeholder for you about me image" width = "640" height = "480">
+
+</div>
+<div class="center-row">
+  <img src="./itsIMG2.png" alt="placeholder for you about me image" width = "640" height = "480">
+
+</div>
+<div class="center-row">
+  <img src="./itsIMG3.png" alt="placeholder for you about me image" width = "640" height = "480">
+
+</div>
+<div class="center-row">
+  <img src="./itsIMG4.png" alt="placeholder for you about me image" width = "640" height = "480">
+
+</div>
 
 <script src="../strapdown.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" ></script>
